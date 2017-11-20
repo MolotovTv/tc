@@ -12,23 +12,23 @@ const (
 )
 
 type LocalConfig struct {
-	buildIDs map[Env]string `json:"build_ids"`
+	BuildIDs map[string]string `json:"build_ids"`
 }
 
-func (c *LocalConfig) BuildID(env Env) string {
-	return c.buildIDs[env]
+func (c *LocalConfig) BuildID(env string) string {
+	return c.BuildIDs[env]
 }
 
-func (c *LocalConfig) BuildIDPromp(env Env) string {
+func (c *LocalConfig) BuildIDPromp(env string) string {
 	id := c.BuildID(env)
 	if id != "" {
 		return id
 	}
 
-	fmt.Print("Build id: ")
+	fmt.Printf("Build id for %s: ", env)
 	fmt.Scanln(&id)
 	if id != "" {
-		c.buildIDs[env] = id
+		c.BuildIDs[env] = id
 		err := c.save()
 		if err != nil {
 			fmt.Println(err)
@@ -52,7 +52,7 @@ func Local() (*LocalConfig, error) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			return &LocalConfig{
-				buildIDs: make(map[Env]string),
+				BuildIDs: make(map[string]string),
 			}, nil
 		}
 		return nil, err
@@ -65,8 +65,8 @@ func Local() (*LocalConfig, error) {
 		return nil, err
 	}
 
-	if config.buildIDs == nil {
-		config.buildIDs = make(map[Env]string)
+	if config.BuildIDs == nil {
+		config.BuildIDs = make(map[string]string)
 	}
 
 	return config, nil

@@ -18,11 +18,17 @@ func init() {
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run a build",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		env := args[0]
+		fmt.Println("Env:", env)
+
 		branch, err := git.Branch()
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		fmt.Println("Branch:", branch)
 
 		local, err := config.Local()
 		if err != nil {
@@ -34,7 +40,7 @@ var runCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		buildID := local.BuildIDPromp(config.EnvStag)
+		buildID := local.BuildIDPromp(env)
 
 		res, err := tc.RunBranch(global, buildID, branch)
 		if err != nil {
