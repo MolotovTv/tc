@@ -19,10 +19,17 @@ type tcServer struct {
 	builds map[string]map[string]*tc.Build
 }
 
+func (s *tcServer) clear() {
+	s.builds = make(map[string]map[string]*tc.Build)
+}
+
 func (s *tcServer) run() {
+	s.clear()
+
 	refresh := func() {
 		c, err := config.Load()
 		if err != nil {
+			s.clear()
 			log.Println(err)
 			return
 		}
@@ -32,6 +39,7 @@ func (s *tcServer) run() {
 				build, err := tc.LastBuild(c, buildID)
 				if err != nil {
 					log.Println(err)
+					s.clear()
 					continue
 				}
 				if build == nil {
@@ -74,9 +82,7 @@ func (s *tcServer) LastBuild(ctx context.Context, b *ProjectEnv) (*tc.Build, err
 }
 
 func Run(listen string) error {
-	t := &tcServer{
-		builds: make(map[string]map[string]*tc.Build),
-	}
+	t := &tcServer{}
 	go t.run()
 	grpcServer := grpc.NewServer()
 	RegisterTCServiceServer(grpcServer, t)
