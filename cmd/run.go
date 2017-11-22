@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/aestek/tc/tc"
-	"github.com/cheggaaa/pb"
 
 	"github.com/aestek/tc/internal/config"
 	"github.com/aestek/tc/internal/git"
@@ -49,24 +48,19 @@ var runCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		bar := pb.StartNew(100)
-		defer bar.FinishPrint("done.")
 		for {
+			time.Sleep(time.Second)
+
 			build, err := tc.LastBuild(c, buildID)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			if build.ID == lastBuild.ID {
-				continue
+			if build.ID != lastBuild.ID {
+				break
 			}
-
-			if build.State == tc.BuildStatusFinished {
-				return
-			}
-
-			bar.Set(int(build.PercentageComplete))
-			time.Sleep(time.Second)
 		}
+
+		buildStatus(c, buildID)
 	},
 }
