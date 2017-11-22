@@ -1,0 +1,18 @@
+syntax = "proto3";
+package tc;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+
+message Build {
+  int64 ID = 1 [(gogoproto.casttype) = "int", (gogoproto.jsontag) = "id"];
+  string Status = 2
+      [(gogoproto.casttype) = "BuildStatus", (gogoproto.jsontag) = "status"];
+  string BranchName = 3 [(gogoproto.jsontag) = "branchName"];
+  string State = 4
+      [(gogoproto.casttype) = "BuildState", (gogoproto.jsontag) = "state"];
+  float PercentageComplete = 5 [(gogoproto.jsontag) = "percentageComplete"];
+}

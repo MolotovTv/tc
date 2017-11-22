@@ -9,7 +9,7 @@ import (
 	"github.com/aestek/tc/internal/config"
 )
 
-func RunBranch(config *config.GlobalConfig, build, branch string) (string, error) {
+func RunBranch(config *config.Config, build, branch string) (string, error) {
 	payload := fmt.Sprintf(`
 		<build branchName="%s">
 			<buildType id="%s"/>

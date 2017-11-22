@@ -3,8 +3,10 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"time"
 
-	"github.com/aestek/tc/internal/tc"
+	"github.com/aestek/tc/tc"
+	"github.com/cheggaaa/pb"
 
 	"github.com/aestek/tc/internal/config"
 	"github.com/aestek/tc/internal/git"
@@ -30,23 +32,41 @@ var runCmd = &cobra.Command{
 
 		fmt.Println("Branch:", branch)
 
-		local, err := config.Local()
+		c, err := config.Load()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		global, err := config.Global()
+		buildID := c.BuildIDPrompt(projectName(), env)
+
+		lastBuild, err := tc.LastBuild(c, buildID)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		buildID := local.BuildIDPromp(env)
-
-		res, err := tc.RunBranch(global, buildID, branch)
+		_, err = tc.RunBranch(c, buildID, branch)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Println(res)
+		bar := pb.StartNew(100)
+		defer bar.FinishPrint("done.")
+		for {
+			build, err := tc.LastBuild(c, buildID)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			if build.ID == lastBuild.ID {
+				continue
+			}
+
+			if build.State == tc.BuildStatusFinished {
+				return
+			}
+
+			bar.Set(int(build.PercentageComplete))
+			time.Sleep(time.Second)
+		}
 	},
 }
