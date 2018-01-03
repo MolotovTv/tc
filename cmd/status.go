@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/0xAX/notificator"
 	"github.com/aestek/tc/internal/config"
 	"github.com/aestek/tc/tc"
 	"github.com/cheggaaa/pb"
@@ -12,6 +13,10 @@ import (
 )
 
 func buildStatus(c *config.Config, buildID string) {
+	notify := notificator.New(notificator.Options{
+		AppName: "TeamCity",
+	})
+
 	build, err := tc.LastBuild(c, buildID)
 	if err != nil {
 		log.Fatal(err)
@@ -22,7 +27,10 @@ func buildStatus(c *config.Config, buildID string) {
 	}
 
 	bar := pb.StartNew(100)
-	defer bar.FinishPrint("done.")
+	defer func() {
+		bar.FinishPrint("done.")
+		notify.Push("Build finished", build.BranchName, "", notificator.UR_NORMAL)
+	}()
 
 	for {
 		build, err := tc.LastBuild(c, buildID)
