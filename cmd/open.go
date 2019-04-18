@@ -3,7 +3,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/aestek/tc/internal/config"
+	"github.com/molotovtv/tc/internal/config"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/spf13/cobra"
 )
@@ -14,7 +14,7 @@ func init() {
 
 var openCmd = &cobra.Command{
 	Use:   "op",
-	Short: "Open a project",
+	Short: "Open the teamcity website",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		env := args[0]

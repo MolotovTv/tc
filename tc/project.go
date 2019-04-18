@@ -6,29 +6,38 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/aestek/tc/internal/config"
+	"github.com/molotovtv/tc/internal/config"
 )
 
 type buildResponse struct {
 	Builds []Build `json:"build"`
 }
 
+// BuildStatus ...
 type BuildStatus string
 
 const (
+	// BuildStatusSuccess ...
 	BuildStatusSuccess BuildStatus = "SUCCESS"
-	BuildStatutFailure BuildStatus = "FAILURE"
-	BuildStatusError   BuildStatus = "ERROR"
+	// BuildStatusFailure ...
+	BuildStatusFailure BuildStatus = "FAILURE"
+	// BuildStatusError ...
+	BuildStatusError BuildStatus = "ERROR"
 )
 
+// BuildState ...
 type BuildState string
 
 const (
-	BuildStateQueued    BuildState = "queued"
-	BuildStatusRunning  BuildState = "running"
+	// BuildStateQueued ...
+	BuildStateQueued BuildState = "queued"
+	// BuildStatusRunning ...
+	BuildStatusRunning BuildState = "running"
+	// BuildStatusFinished ...
 	BuildStatusFinished BuildState = "finished"
 )
 
+// LastBuild ...
 func LastBuild(config *config.Config, build string) (*Build, error) {
 	req, err := http.NewRequest(
 		http.MethodGet,

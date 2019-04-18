@@ -3,5 +3,5 @@ PROTOC := protoc \
 			--gogo_out=plugins=grpc:.
 
 proto:
-	cd $(GOPATH)/src && $(PROTOC) github.com/aestek/tc/tc/*.proto
-	cd $(GOPATH)/src && $(PROTOC) github.com/aestek/tc/server/*.proto
+	cd $(GOPATH)/src && $(PROTOC) github.com/molotovtv/tc/tc/*.proto
+	cd $(GOPATH)/src && $(PROTOC) github.com/molotovtv/tc/server/*.proto

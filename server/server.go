@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aestek/tc/internal/config"
-	"github.com/aestek/tc/tc"
+	"github.com/molotovtv/tc/internal/config"
+	"github.com/molotovtv/tc/tc"
 	context "golang.org/x/net/context"
 	grpc "google.golang.org/grpc"
 )

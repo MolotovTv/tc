@@ -3,7 +3,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/aestek/tc/internal/config"
+	"github.com/molotovtv/tc/internal/config"
 	"github.com/spf13/cobra"
 )
 
