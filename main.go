@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/aestek/tc/cmd"
+	"github.com/molotovtv/tc/cmd"
 )
 
 func main() {

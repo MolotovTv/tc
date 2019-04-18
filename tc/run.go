@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/aestek/tc/internal/config"
+	"github.com/molotovtv/tc/internal/config"
 )
 
+// RunBranch ...
 func RunBranch(config *config.Config, build, branch string) (string, error) {
 	payload := fmt.Sprintf(`
 		<build branchName="%s">

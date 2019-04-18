@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/0xAX/notificator"
-	"github.com/aestek/tc/internal/config"
-	"github.com/aestek/tc/tc"
 	"github.com/cheggaaa/pb"
+	"github.com/molotovtv/tc/internal/config"
+	"github.com/molotovtv/tc/tc"
 	"github.com/spf13/cobra"
 )
 

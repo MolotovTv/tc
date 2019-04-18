@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aestek/tc/tc"
+	"github.com/molotovtv/tc/tc"
 
-	"github.com/aestek/tc/internal/config"
+	"github.com/molotovtv/tc/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +16,7 @@ func init() {
 
 var lastBuildCmd = &cobra.Command{
 	Use:   "last-build",
-	Short: "get last build info",
+	Short: "Get last build info",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		env := args[0]

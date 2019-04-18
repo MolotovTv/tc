@@ -5,10 +5,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/aestek/tc/tc"
+	"github.com/molotovtv/tc/tc"
 
-	"github.com/aestek/tc/internal/config"
-	"github.com/aestek/tc/internal/git"
+	"github.com/molotovtv/tc/internal/config"
+	"github.com/molotovtv/tc/internal/git"
 	"github.com/spf13/cobra"
 )
 

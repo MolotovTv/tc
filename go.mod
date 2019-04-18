@@ -1,4 +1,4 @@
-module github.com/aestek/tc
+module github.com/molotovtv/tc
 
 require (
 	github.com/0xAX/notificator v0.0.0-20181105090803-d81462e38c21
