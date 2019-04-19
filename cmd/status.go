@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func buildStatus(c *config.Config, buildID string) {
+func buildStatus(c config.Config, buildID string) {
 	notify := notificator.New(notificator.Options{
 		AppName: "TeamCity",
 	})
@@ -64,7 +64,10 @@ var statusCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		buildID := c.BuildIDPrompt(projectName(), env)
+		buildID, err := config.BuildID(env)
+		if err != nil {
+			log.Fatal(err)
+		}
 		buildStatus(c, buildID)
 	},
 }

@@ -4,110 +4,46 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/user"
 )
-
-var configPath string
-
-func init() {
-	usr, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	configPath = usr.HomeDir + "/.tc"
-}
 
 type Config struct {
 	URL      string
 	UserName string
 	Password string
-	BuildIDs map[string]map[string]string // project, env, build_id
 }
 
-func Load() (*Config, error) {
-	file, err := os.Open(configPath)
+func Load() (Config, error) {
+	usr, err := user.Current()
 	if err != nil {
-		if os.IsNotExist(err) {
-			config := &Config{}
-
-			fmt.Print("url: ")
-			fmt.Scanln(&config.URL)
-
-			fmt.Print("username: ")
-			fmt.Scanln(&config.UserName)
-
-			fmt.Print("password: ")
-			fmt.Scanln(&config.Password)
-
-			err = config.save()
-			if err != nil {
-				return nil, err
-			}
-
-			return config, nil
+		return Config{}, err
+	}
+	path := usr.HomeDir + "/.tc"
+	f, err := os.Open(path)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return Config{}, err
 		}
-		return nil, err
-	}
+		config := Config{}
+		fmt.Print("url: ")
+		fmt.Scanln(&config.URL)
 
-	config := &Config{}
-	err = json.NewDecoder(file).Decode(config)
-	if err != nil {
-		return nil, err
-	}
+		fmt.Print("username: ")
+		fmt.Scanln(&config.UserName)
 
-	return config, nil
-}
+		fmt.Print("password: ")
+		fmt.Scanln(&config.Password)
 
-func (c *Config) BuildID(project, env string) string {
-	if c.BuildIDs == nil {
-		return ""
-	}
-	p, ok := c.BuildIDs[project]
-	if !ok {
-		return ""
-	}
-
-	return p[env]
-}
-
-func (c *Config) SetBuildID(project, env, buildID string) error {
-	if c.BuildIDs == nil {
-		c.BuildIDs = make(map[string]map[string]string)
-	}
-	_, ok := c.BuildIDs[project]
-	if !ok {
-		c.BuildIDs[project] = make(map[string]string)
-	}
-	c.BuildIDs[project][env] = buildID
-	return c.save()
-}
-
-func (c *Config) BuildIDPrompt(project, env string) string {
-	id := c.BuildID(project, env)
-	if id != "" {
-		return id
-	}
-
-	fmt.Printf("Build id for %s: ", env)
-	fmt.Scanln(&id)
-	if id != "" {
-		err := c.SetBuildID(project, env, id)
+		raw, err := json.Marshal(config)
 		if err != nil {
-			fmt.Println(err)
+			return Config{}, err
 		}
+		return config, ioutil.WriteFile(path, raw, 0644)
 	}
-
-	return id
-}
-
-func (c *Config) save() error {
-	raw, err := json.Marshal(c)
-	if err != nil {
-		return err
+	config := Config{}
+	if err := json.NewDecoder(f).Decode(&config); err != nil {
+		return Config{}, err
 	}
-
-	return ioutil.WriteFile(configPath, raw, 0644)
+	return config, f.Close()
 }

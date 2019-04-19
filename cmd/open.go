@@ -18,14 +18,14 @@ var openCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		env := args[0]
-
 		c, err := config.Load()
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		buildID := c.BuildIDPrompt(projectName(), env)
-
+		buildID, err := config.BuildID(env)
+		if err != nil {
+			log.Fatal(err)
+		}
 		open.Run(c.URL + "/viewType.html?buildTypeId=" + buildID)
 	},
 }

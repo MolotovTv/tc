@@ -10,6 +10,5 @@ func Branch() (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return strings.TrimSpace(string(out)), nil
 }
