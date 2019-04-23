@@ -38,7 +38,7 @@ const (
 )
 
 // LastBuild ...
-func LastBuild(config *config.Config, build string) (*Build, error) {
+func LastBuild(config config.Config, build string) (*Build, error) {
 	req, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf("%s/app/rest/builds?locator=buildType:(id:%s),branch:default:any,running:any", config.URL, build),

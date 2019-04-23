@@ -36,7 +36,10 @@ var runCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		buildID := c.BuildIDPrompt(projectName(), env)
+		buildID, err := config.BuildID(env)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		lastBuild, err := tc.LastBuild(c, buildID)
 		if err != nil {

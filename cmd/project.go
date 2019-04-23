@@ -11,6 +11,5 @@ func projectName() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	return path.Base(dir)
 }
