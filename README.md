@@ -8,6 +8,9 @@ When you use `tc` for the first time you will be prompted with some informations
 * **password**: your password on your instance
 * **build id for dev**: copy from your teamcity instance url the argument buildTypeId (example: http://teamcity.instance.tld/viewType.html?buildTypeId=xxx)
 
+## If config file
+In each repository you will have a .tc file containing `build id` for each env.
+
 ## How to use it?
 ### Preamble
 For example we have :
@@ -31,5 +34,7 @@ tc last-build dev
 tc op dev
 ```
 
-## Molotov Team only
-You can dowload our conf file in tc-config repository.
+### tc version
+```
+tc version
+```
