@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb"
-	"github.com/molotovtv/tc/tc"
-
+	"github.com/fatih/color"
 	"github.com/molotovtv/tc/internal/config"
+	"github.com/molotovtv/tc/tc"
 	"github.com/spf13/cobra"
 )
 
@@ -54,6 +54,10 @@ func buildStatus(c config.Config, buildID string) {
 		bar.Set(int(build.PercentageComplete))
 		time.Sleep(time.Second)
 	}
-	bar.FinishPrint("done.")
-	fmt.Printf("last build:\n%+v", build)
+	bar.Finish()
+	if build == nil || build.Status != "SUCCESS" {
+		color.Red("Build failed!")
+		return
+	}
+	color.Green("Build succeeded!")
 }
