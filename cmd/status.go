@@ -5,47 +5,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/0xAX/notificator"
 	"github.com/cheggaaa/pb"
+	"github.com/fatih/color"
 	"github.com/molotovtv/tc/internal/config"
 	"github.com/molotovtv/tc/tc"
 	"github.com/spf13/cobra"
 )
-
-func buildStatus(c config.Config, buildID string) {
-	notify := notificator.New(notificator.Options{
-		AppName: "TeamCity",
-	})
-
-	build, err := tc.LastBuild(c, buildID)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if build.State == tc.BuildStatusFinished {
-		return
-	}
-
-	bar := pb.StartNew(100)
-	defer func() {
-		bar.FinishPrint("done.")
-		notify.Push("Build finished", build.BranchName, "", notificator.UR_NORMAL)
-	}()
-
-	for {
-		build, err := tc.LastBuild(c, buildID)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if build.State == tc.BuildStatusFinished {
-			return
-		}
-
-		bar.Set(int(build.PercentageComplete))
-		time.Sleep(time.Second)
-	}
-}
 
 func init() {
 	RootCmd.AddCommand(statusCmd)
@@ -70,4 +35,29 @@ var statusCmd = &cobra.Command{
 		}
 		buildStatus(c, buildID)
 	},
+}
+
+func buildStatus(c config.Config, buildID string) {
+	bar := pb.StartNew(100)
+	var build *tc.Build
+	for {
+		var err error
+		build, err = tc.LastBuild(c, buildID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if build.State == tc.BuildStatusFinished {
+			break
+		}
+
+		bar.Set(int(build.PercentageComplete))
+		time.Sleep(time.Second)
+	}
+	bar.Finish()
+	if build == nil || build.Status != "SUCCESS" {
+		color.Red("Build failed!")
+		return
+	}
+	color.Green("Build succeeded!")
 }
