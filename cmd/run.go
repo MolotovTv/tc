@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"regexp"
 	"time"
 
 	"github.com/molotovtv/tc/tc"
@@ -16,6 +17,18 @@ func init() {
 	RootCmd.AddCommand(runCmd)
 }
 
+func renameBranchForProd(branchOrigin string) string {
+	re, err := regexp.Compile("^release\\-([0-9]+(\\.[0-9]+)*)$")
+	if err != nil {
+		return ""
+	}
+	matches := re.FindAllStringSubmatch(branchOrigin, -1)
+	if len(matches) > 0 && len(matches[0]) > 1 {
+		return matches[0][1]
+	}
+	return ""
+}
+
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run a build",
@@ -27,6 +40,13 @@ var runCmd = &cobra.Command{
 		branch, err := git.Branch()
 		if err != nil {
 			log.Fatal(err)
+		}
+		if env == "prod" {
+			prodBranch := renameBranchForProd(branch)
+			if branch == "" {
+				log.Fatal(fmt.Errorf("could not remap branch %s to a correct prod branch name", branch))
+			}
+			branch = prodBranch
 		}
 
 		fmt.Println("Branch:", branch)
