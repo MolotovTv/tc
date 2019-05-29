@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/molotovtv/tc/internal/config"
 )
@@ -36,6 +37,35 @@ const (
 	// BuildStatusFinished ...
 	BuildStatusFinished BuildState = "finished"
 )
+
+// CancelBuild ...
+func CancelBuild(config config.Config, build int) error {
+	req, err := http.NewRequest(
+		http.MethodPost,
+		fmt.Sprintf("%s/app/rest/builds/id:%d", config.URL, build),
+		strings.NewReader("<buildCancelRequest comment='build cancelled by api' readdIntoQueue='false' />"),
+	)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Content-Type", "application/xml")
+	req.Header.Add("Accept", "application/json")
+	req.SetBasicAuth(config.UserName, config.Password)
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		body, _ := ioutil.ReadAll(res.Body)
+		return fmt.Errorf("error making request: %s", string(body))
+	}
+	return nil
+}
 
 // LastBuild ...
 func LastBuild(config config.Config, build string) (*Build, error) {

@@ -3,7 +3,11 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
 	"time"
+
+	"syscall"
 
 	"github.com/cheggaaa/pb"
 	"github.com/fatih/color"
@@ -40,6 +44,9 @@ var statusCmd = &cobra.Command{
 func buildStatus(c config.Config, buildID string) {
 	bar := pb.StartNew(100)
 	var build *tc.Build
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
+	buildInterrupted := false
 	for {
 		var err error
 		build, err = tc.LastBuild(c, buildID)
@@ -52,9 +59,26 @@ func buildStatus(c config.Config, buildID string) {
 		}
 
 		bar.Set(int(build.PercentageComplete))
-		time.Sleep(time.Second)
+		select {
+		case <-signalChan:
+			buildInterrupted = true
+			break
+		case <-time.After(time.Second):
+			break
+		}
+		if buildInterrupted {
+			break
+		}
 	}
+	signal.Reset(os.Interrupt, syscall.SIGTERM)
 	bar.Finish()
+	if buildInterrupted {
+		if err := tc.CancelBuild(c, build.ID); err != nil {
+			log.Fatal(err)
+		}
+		color.Magenta("Build cancelled!")
+		return
+	}
 	if build == nil || build.Status != "SUCCESS" {
 		color.Red("Build failed!")
 		return
