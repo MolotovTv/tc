@@ -13,7 +13,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var runSilent bool
+
 func init() {
+	runCmd.PersistentFlags().BoolVarP(&runSilent, "silent", "s", false, "Silent")
 	RootCmd.AddCommand(runCmd)
 }
 
@@ -35,6 +38,7 @@ var runCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		env := args[0]
+
 		fmt.Println("Env:", env)
 
 		branch, err := git.Branch()
@@ -69,6 +73,10 @@ var runCmd = &cobra.Command{
 		_, err = tc.RunBranch(c, buildID, branch)
 		if err != nil {
 			log.Fatal(err)
+		}
+
+		if runSilent {
+			return
 		}
 
 		for {
