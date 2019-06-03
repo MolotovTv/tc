@@ -24,6 +24,12 @@ All commands are made at the root of your project go-service in bash.
 tc run dev
 ```
 
+Silent mode
+
+```
+tc run dev -s
+```
+
 ### Last Build deployed
 ```
 tc last-build dev
