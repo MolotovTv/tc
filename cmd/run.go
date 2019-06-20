@@ -13,7 +13,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var runSilent bool
+var (
+	runSilent bool
+	regex     = regexp.MustCompile("^release\\-([0-9]+(\\.[0-9]+)*)$")
+)
 
 func init() {
 	runCmd.PersistentFlags().BoolVarP(&runSilent, "silent", "s", false, "Silent")
@@ -21,11 +24,7 @@ func init() {
 }
 
 func renameBranchForProd(branchOrigin string) string {
-	re, err := regexp.Compile("^release\\-([0-9]+(\\.[0-9]+)*)$")
-	if err != nil {
-		return ""
-	}
-	matches := re.FindAllStringSubmatch(branchOrigin, -1)
+	matches := regex.FindAllStringSubmatch(branchOrigin, -1)
 	if len(matches) > 0 && len(matches[0]) > 1 {
 		return matches[0][1]
 	}
@@ -45,10 +44,10 @@ var runCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		if env == "prod" {
+		if env == "prod" || env == "test" {
 			prodBranch := renameBranchForProd(branch)
 			if branch == "" {
-				log.Fatal(fmt.Errorf("could not remap branch %s to a correct prod branch name", branch))
+				log.Fatalf("could not remap branch %s to a correct prod branch name", branch)
 			}
 			branch = prodBranch
 		}
