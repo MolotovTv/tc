@@ -37,19 +37,25 @@ var statusCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		buildStatus(c, buildTypeID)
+
+		build, err := tc.LastBuild(c, buildTypeID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		buildStatus(c, build.ID)
 	},
 }
 
-func buildStatus(c config.Config, buildTypeID string) {
+func buildStatus(c config.Config, buildID int) {
 	bar := pb.StartNew(100)
-	var build *tc.Build
+	var build tc.DetailedBuild
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	buildInterrupted := false
+L:
 	for {
 		var err error
-		build, err = tc.LastBuild(c, buildTypeID)
+		build, err = tc.GetBuild(c, buildID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -62,10 +68,8 @@ func buildStatus(c config.Config, buildTypeID string) {
 		select {
 		case <-signalChan:
 			buildInterrupted = true
-		case <-time.After(time.Second):
-		}
-		if buildInterrupted {
-			break
+			break L
+		case <-time.After(time.Second * 3):
 		}
 	}
 	signal.Reset(os.Interrupt, syscall.SIGTERM)
@@ -77,7 +81,7 @@ func buildStatus(c config.Config, buildTypeID string) {
 		color.Magenta("Build cancelled!")
 		return
 	}
-	if build == nil || build.Status != "SUCCESS" {
+	if build.Status != tc.BuildStatusSuccess {
 		color.Red("Build failed!")
 		return
 	}

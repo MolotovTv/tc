@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"time"
 
 	"github.com/molotovtv/tc/tc"
 
@@ -42,7 +41,7 @@ var runCmd = &cobra.Command{
 
 		branch, err := git.Branch()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("%+v", err)
 		}
 		if env == "prod" || env == "test" {
 			prodBranch := renameBranchForProd(branch)
@@ -56,41 +55,23 @@ var runCmd = &cobra.Command{
 
 		c, err := config.Load()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("%+v", err)
 		}
 
 		buildTypeID, err := config.BuildTypeID(env)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("%+v", err)
 		}
 
-		lastBuild, err := tc.LastBuild(c, buildTypeID)
+		buildID, err := tc.RunBranch(c, buildTypeID, branch)
 		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = tc.RunBranch(c, buildTypeID, branch)
-		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("%+v", err)
 		}
 
 		if runSilent {
 			return
 		}
 
-		for {
-			time.Sleep(time.Second)
-
-			build, err := tc.LastBuild(c, buildTypeID)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			if build.ID != lastBuild.ID {
-				break
-			}
-		}
-
-		buildStatus(c, buildTypeID)
+		buildStatus(c, buildID)
 	},
 }

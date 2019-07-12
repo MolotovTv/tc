@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/molotovtv/tc/internal/config"
+	"github.com/pkg/errors"
 )
 
 type buildResponse struct {
@@ -39,14 +40,14 @@ const (
 )
 
 // CancelBuild ...
-func CancelBuild(config config.Config, build int) error {
+func CancelBuild(config config.Config, buildID int) error {
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s/app/rest/builds/id:%d", config.URL, build),
+		fmt.Sprintf("%s/app/rest/builds/id:%d", config.URL, buildID),
 		strings.NewReader("<buildCancelRequest comment='build cancelled by api' readdIntoQueue='false' />"),
 	)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	req.Header.Add("Content-Type", "application/xml")
@@ -56,7 +57,7 @@ func CancelBuild(config config.Config, build int) error {
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 	defer res.Body.Close()
 
@@ -68,14 +69,14 @@ func CancelBuild(config config.Config, build int) error {
 }
 
 // LastBuild ...
-func LastBuild(config config.Config, buildTypeID string) (*Build, error) {
+func LastBuild(config config.Config, buildTypeID string) (Build, error) {
 	req, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf("%s/app/rest/builds?locator=buildType:(id:%s),branch:default:any,running:any,defaultFilter:false,count:1", config.URL, buildTypeID),
 		nil,
 	)
 	if err != nil {
-		return nil, err
+		return Build{}, errors.WithStack(err)
 	}
 
 	req.Header.Add("Content-Type", "application/xml")
@@ -85,24 +86,51 @@ func LastBuild(config config.Config, buildTypeID string) (*Build, error) {
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return Build{}, errors.WithStack(err)
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
 		body, _ := ioutil.ReadAll(res.Body)
-		return nil, fmt.Errorf("error making request: %s", string(body))
+		return Build{}, fmt.Errorf("error making request: %s", string(body))
 	}
 
 	builds := buildResponse{}
-	err = json.NewDecoder(res.Body).Decode(&builds)
-	if err != nil {
-		return nil, err
+	if err := json.NewDecoder(res.Body).Decode(&builds); err != nil {
+		return Build{}, errors.WithStack(err)
 	}
 
 	if len(builds.Builds) > 0 {
-		return &builds.Builds[0], nil
+		return builds.Builds[0], nil
+	}
+	return Build{}, nil
+}
+
+func GetBuild(config config.Config, buildID int) (DetailedBuild, error) {
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("%s/app/rest/builds/id:%d", config.URL, buildID),
+		nil,
+	)
+	if err != nil {
+		return DetailedBuild{}, errors.WithStack(err)
 	}
 
-	return nil, nil
+	req.Header.Add("Accept", "application/json")
+	req.SetBasicAuth(config.UserName, config.Password)
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return DetailedBuild{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		body, _ := ioutil.ReadAll(res.Body)
+		return DetailedBuild{}, fmt.Errorf("error making request: %s", string(body))
+	}
+
+	build := DetailedBuild{}
+	return build, errors.WithStack(json.NewDecoder(res.Body).Decode(&build))
 }

@@ -7,6 +7,15 @@ option (gogoproto.marshaler_all) = true;
 option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.sizer_all) = true;
 
+message RunningInfo {
+  float PercentageComplete = 1 [(gogoproto.jsontag) = "percentageComplete"];
+  int64 ElapsedSeconds = 2 [(gogoproto.jsontag) = "elapsedSeconds"];
+  int64 EstimatedTotalSeconds = 3 [(gogoproto.jsontag) = "estimatedTotalSeconds"];
+  string CurrentStageText = 4 [(gogoproto.jsontag) = "currentStageText"];
+  bool Outdated = 5 [(gogoproto.jsontag) = "outdated"];
+  bool ProbablyHanging = 6 [(gogoproto.jsontag) = "probablyHanging"];
+}
+
 message Build {
   int64 ID = 1 [(gogoproto.casttype) = "int", (gogoproto.jsontag) = "id"];
   string Status = 2
@@ -15,4 +24,9 @@ message Build {
   string State = 4
       [(gogoproto.casttype) = "BuildState", (gogoproto.jsontag) = "state"];
   float PercentageComplete = 5 [(gogoproto.jsontag) = "percentageComplete"];
+}
+
+message DetailedBuild {
+  Build Build = 1 [(gogoproto.embed) = true, (gogoproto.jsontag) = ""];
+  RunningInfo RunningInfo = 2 [(gogoproto.jsontag) = "running-info"]; 
 }
