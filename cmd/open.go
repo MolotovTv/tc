@@ -22,10 +22,10 @@ var openCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		buildID, err := config.BuildID(env)
+		buildTypeID, err := config.BuildTypeID(env)
 		if err != nil {
 			log.Fatal(err)
 		}
-		open.Run(c.URL + "/viewType.html?buildTypeId=" + buildID)
+		open.Run(c.URL + "/viewType.html?buildTypeId=" + buildTypeID)
 	},
 }

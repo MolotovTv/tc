@@ -1,22 +1,24 @@
 package tc
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/molotovtv/tc/internal/config"
+	"github.com/pkg/errors"
 )
 
 // RunBranch ...
-func RunBranch(config config.Config, build, branch string) (string, error) {
+func RunBranch(config config.Config, buildType, branch string) (int, error) {
 	payload := fmt.Sprintf(`
 		<build branchName="%s">
 			<buildType id="%s"/>
 			<comment><text>api build</text></comment>
 		</build>
-	`, branch, build)
+	`, branch, buildType)
 
 	r := strings.NewReader(payload)
 
@@ -26,19 +28,25 @@ func RunBranch(config config.Config, build, branch string) (string, error) {
 		r,
 	)
 	if err != nil {
-		return "", err
+		return 0, errors.WithStack(err)
 	}
 
+	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/xml")
 	req.SetBasicAuth(config.UserName, config.Password)
 
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return 0, errors.WithStack(err)
 	}
 	defer res.Body.Close()
 
-	body, _ := ioutil.ReadAll(res.Body)
-	return string(body), nil
+	if res.StatusCode != 200 {
+		body, _ := ioutil.ReadAll(res.Body)
+		return 0, fmt.Errorf("error making request: %s", string(body))
+	}
+
+	var build Build
+	return build.ID, errors.WithStack(json.NewDecoder(res.Body).Decode(&build))
 }
