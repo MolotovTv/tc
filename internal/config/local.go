@@ -24,39 +24,39 @@ func readLocal() (map[string]string, error) {
 	if err != nil {
 		return map[string]string{}, err
 	}
-	buildIDs := map[string]string{}
-	json.Unmarshal(raw, &buildIDs) // ignore malformed json
-	return buildIDs, nil
+	buildTypeIDs := map[string]string{}
+	json.Unmarshal(raw, &buildTypeIDs) // ignore malformed json
+	return buildTypeIDs, nil
 }
 
-func writeLocal(buildIDs map[string]string) error {
-	raw, err := json.Marshal(buildIDs)
+func writeLocal(buildTypeIDs map[string]string) error {
+	raw, err := json.Marshal(buildTypeIDs)
 	if err != nil {
 		return err
 	}
 	return ioutil.WriteFile(localPath, raw, 0644)
 }
 
-func BuildID(env string) (string, error) {
-	buildIDs, err := readLocal()
+func BuildTypeID(env string) (string, error) {
+	buildTypeIDs, err := readLocal()
 	if err != nil && !os.IsNotExist(err) {
 		return "", err
 	}
-	if id, ok := buildIDs[env]; ok {
+	if id, ok := buildTypeIDs[env]; ok {
 		return id, nil
 	}
 	fmt.Printf("Build id for %s: ", env)
 	var id string
 	fmt.Scanln(&id)
-	buildIDs[env] = id
-	return id, writeLocal(buildIDs)
+	buildTypeIDs[env] = id
+	return id, writeLocal(buildTypeIDs)
 }
 
-func SetBuildID(env, id string) (err error) {
-	buildIDs, err := readLocal()
+func SetBuildTypeID(env, id string) (err error) {
+	buildTypeIDs, err := readLocal()
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
-	buildIDs[env] = id
-	return writeLocal(buildIDs)
+	buildTypeIDs[env] = id
+	return writeLocal(buildTypeIDs)
 }

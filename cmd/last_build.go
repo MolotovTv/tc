@@ -27,12 +27,12 @@ var lastBuildCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		buildID, err := config.BuildID(env)
+		buildTypeID, err := config.BuildTypeID(env)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		res, err := tc.LastBuild(c, buildID)
+		res, err := tc.LastBuild(c, buildTypeID)
 		if err != nil {
 			log.Fatal(err)
 		}

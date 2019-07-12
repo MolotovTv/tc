@@ -59,17 +59,17 @@ var runCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		buildID, err := config.BuildID(env)
+		buildTypeID, err := config.BuildTypeID(env)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		lastBuild, err := tc.LastBuild(c, buildID)
+		lastBuild, err := tc.LastBuild(c, buildTypeID)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		_, err = tc.RunBranch(c, buildID, branch)
+		_, err = tc.RunBranch(c, buildTypeID, branch)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -81,7 +81,7 @@ var runCmd = &cobra.Command{
 		for {
 			time.Sleep(time.Second)
 
-			build, err := tc.LastBuild(c, buildID)
+			build, err := tc.LastBuild(c, buildTypeID)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -91,6 +91,6 @@ var runCmd = &cobra.Command{
 			}
 		}
 
-		buildStatus(c, buildID)
+		buildStatus(c, buildTypeID)
 	},
 }

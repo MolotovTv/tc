@@ -33,15 +33,15 @@ var statusCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		buildID, err := config.BuildID(env)
+		buildTypeID, err := config.BuildTypeID(env)
 		if err != nil {
 			log.Fatal(err)
 		}
-		buildStatus(c, buildID)
+		buildStatus(c, buildTypeID)
 	},
 }
 
-func buildStatus(c config.Config, buildID string) {
+func buildStatus(c config.Config, buildTypeID string) {
 	bar := pb.StartNew(100)
 	var build *tc.Build
 	signalChan := make(chan os.Signal, 1)
@@ -49,7 +49,7 @@ func buildStatus(c config.Config, buildID string) {
 	buildInterrupted := false
 	for {
 		var err error
-		build, err = tc.LastBuild(c, buildID)
+		build, err = tc.LastBuild(c, buildTypeID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -62,9 +62,7 @@ func buildStatus(c config.Config, buildID string) {
 		select {
 		case <-signalChan:
 			buildInterrupted = true
-			break
 		case <-time.After(time.Second):
-			break
 		}
 		if buildInterrupted {
 			break

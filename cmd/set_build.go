@@ -16,7 +16,7 @@ var setBuildCmd = &cobra.Command{
 	Short: "Set a build id",
 	Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := config.SetBuildID(args[0], args[1]); err != nil {
+		if err := config.SetBuildTypeID(args[0], args[1]); err != nil {
 			log.Fatal(err)
 		}
 	},
