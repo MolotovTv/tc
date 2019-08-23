@@ -71,8 +71,6 @@ var runCmd = &cobra.Command{
 			branch = tag
 		}
 
-		fmt.Println("Branch:", branch)
-
 		c, err := config.Load()
 		if err != nil {
 			log.Fatalf("%+v", err)
@@ -87,7 +85,8 @@ var runCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalf("%+v", err)
 			}
-			fmt.Printf("Will deploy this commit to %s\n------------------------------\n%s\n------------------------------\nContinue?", color.New(color.Bold).SprintFunc()("prod"), refInfos)
+			branch = branch[1:len(branch)]
+			fmt.Printf("Will deploy version (%s) with this commit to %s\n------------------------------\n%s\n------------------------------\nContinue?", color.New(color.FgGreen).SprintFunc()(branch), color.New(color.Bold).SprintFunc()("prod"), refInfos)
 		}
 		var ok string
 		fmt.Scanln(&ok)
