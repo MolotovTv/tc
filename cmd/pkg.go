@@ -84,9 +84,6 @@ func suggestFromTags(tags []string) string {
 		if validVersions[i].Patch < validVersions[j].Patch {
 			return true
 		}
-		if validVersions[i].Patch > validVersions[j].Patch {
-			return false
-		}
 		return false
 	})
 
