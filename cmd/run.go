@@ -80,13 +80,13 @@ var runCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("%+v", err)
 		}
-		if env == "prod" {
+		if env == "prod" || env == "test" {
 			refInfos, err := git.ShowRef(tag)
 			if err != nil {
 				log.Fatalf("%+v", err)
 			}
 			branch = branch[1:len(branch)]
-			fmt.Printf("Will deploy version (%s) with this commit to %s\n------------------------------\n%s\n------------------------------\nContinue?", color.New(color.FgGreen).SprintFunc()(branch), color.New(color.Bold).SprintFunc()("prod"), refInfos)
+			fmt.Printf("Will deploy version (%s) with this commit to %s\n------------------------------\n%s\n------------------------------\nContinue?", color.New(color.FgGreen).SprintFunc()(branch), color.New(color.Bold).SprintFunc()(env), refInfos)
 			var ok string
 			fmt.Scanln(&ok)
 		}
