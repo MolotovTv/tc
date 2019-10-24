@@ -5,6 +5,7 @@ import (
 	"log"
 	"regexp"
 
+	"github.com/fatih/color"
 	"github.com/molotovtv/tc/tc"
 
 	"github.com/molotovtv/tc/internal/config"
@@ -32,26 +33,43 @@ func renameBranchForProd(branchOrigin string) string {
 
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "Run a build",
+	Short: "Deploy a version",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		env := args[0]
 
 		fmt.Println("Env:", env)
-
-		branch, err := git.Branch()
+		var tag string
+		branch, err := git.CurrentBranch()
 		if err != nil {
 			log.Fatalf("%+v", err)
 		}
 		if env == "prod" || env == "test" {
-			prodBranch := renameBranchForProd(branch)
-			if branch == "" {
-				log.Fatalf("could not remap branch %s to a correct prod branch name", branch)
+			if len(args) > 1 {
+				tag = args[1]
+			} else {
+				tags, err := git.CurrentTags()
+				if err != nil {
+					log.Fatalf("%+v", err)
+					return
+				}
+				if len(tags) == 0 {
+					log.Fatalf("No tag found in HEAD. precise which tag to run.")
+					return
+				} else if len(tags) > 1 {
+					log.Fatalf("more than one tag available, precise which one to package: %+v", tags)
+					return
+				} else {
+					tag = tags[0]
+				}
 			}
-			branch = prodBranch
-		}
 
-		fmt.Println("Branch:", branch)
+			if !tagRegex.Match([]byte(tag)) {
+				log.Fatalf("tag %s does not validate, tags for prod must be vx.y.z", tag)
+				return
+			}
+			branch = tag
+		}
 
 		c, err := config.Load()
 		if err != nil {
@@ -62,6 +80,17 @@ var runCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("%+v", err)
 		}
+		if env == "prod" || env == "test" {
+			refInfos, err := git.ShowRef(tag)
+			if err != nil {
+				log.Fatalf("%+v", err)
+			}
+			branch = branch[1:len(branch)]
+			fmt.Printf("Will deploy version (%s) with this commit to %s\n------------------------------\n%s\n------------------------------\nContinue?", color.New(color.FgGreen).SprintFunc()(branch), color.New(color.Bold).SprintFunc()(env), refInfos)
+			var ok string
+			fmt.Scanln(&ok)
+		}
+		fmt.Printf("Deploying version %s on %s...\n", color.New(color.FgGreen).SprintFunc()(branch), color.New(color.FgGreen).SprintFunc()(env))
 
 		buildID, err := tc.RunBranch(c, buildTypeID, branch)
 		if err != nil {
