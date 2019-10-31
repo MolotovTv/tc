@@ -3,7 +3,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/molotovtv/tc/internal/config"
+	"github.com/molotovtv/tc/tc"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/spf13/cobra"
 )
@@ -18,11 +18,11 @@ var openCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		env := args[0]
-		c, err := config.Load()
+		c, err := tc.LoadConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
-		buildTypeID, err := config.BuildTypeID(env)
+		buildTypeID, err := c.BuildTypeID(env)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/molotovtv/tc/internal/config"
 	"github.com/pkg/errors"
 )
 
 // RunBranch ...
-func RunBranch(config config.Config, buildType, branch string) (int, error) {
+func RunBranch(config Config, buildType, branch string) (int, error) {
 	payload := fmt.Sprintf(`
 		<build branchName="%s">
 			<buildType id="%s"/>

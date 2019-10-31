@@ -5,8 +5,6 @@ import (
 	"log"
 
 	"github.com/molotovtv/tc/tc"
-
-	"github.com/molotovtv/tc/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -22,12 +20,12 @@ var lastBuildCmd = &cobra.Command{
 		env := args[0]
 		fmt.Println("Env:", env)
 
-		c, err := config.Load()
+		c, err := tc.LoadConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		buildTypeID, err := config.BuildTypeID(env)
+		buildTypeID, err := c.BuildTypeID(env)
 		if err != nil {
 			log.Fatal(err)
 		}

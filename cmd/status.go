@@ -11,7 +11,6 @@ import (
 
 	"github.com/cheggaaa/pb"
 	"github.com/fatih/color"
-	"github.com/molotovtv/tc/internal/config"
 	"github.com/molotovtv/tc/tc"
 	"github.com/spf13/cobra"
 )
@@ -28,12 +27,12 @@ var statusCmd = &cobra.Command{
 		env := args[0]
 		fmt.Println("Env:", env)
 
-		c, err := config.Load()
+		c, err := tc.LoadConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		buildTypeID, err := config.BuildTypeID(env)
+		buildTypeID, err := c.BuildTypeID(env)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -46,7 +45,7 @@ var statusCmd = &cobra.Command{
 	},
 }
 
-func buildStatus(c config.Config, buildID int) {
+func buildStatus(c tc.Config, buildID int) {
 	bar := pb.StartNew(100)
 	var build tc.DetailedBuild
 	signalChan := make(chan os.Signal, 1)

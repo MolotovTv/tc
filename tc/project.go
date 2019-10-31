@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/molotovtv/tc/internal/config"
 	"github.com/pkg/errors"
 )
 
@@ -16,7 +15,7 @@ type buildResponse struct {
 }
 
 // BuildStatus ...
-type BuildStatus string
+type BuildStatus string 
 
 const (
 	// BuildStatusSuccess ...
@@ -40,7 +39,7 @@ const (
 )
 
 // CancelBuild ...
-func CancelBuild(config config.Config, buildID int) error {
+func CancelBuild(config Config, buildID int) error {
 	req, err := http.NewRequest(
 		http.MethodPost,
 		fmt.Sprintf("%s/app/rest/builds/id:%d", config.URL, buildID),
@@ -69,7 +68,7 @@ func CancelBuild(config config.Config, buildID int) error {
 }
 
 // LastBuild ...
-func LastBuild(config config.Config, buildTypeID string) (Build, error) {
+func LastBuild(config Config, buildTypeID string) (Build, error) {
 	req, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf("%s/app/rest/builds?locator=buildType:(id:%s),branch:default:any,running:any,defaultFilter:false,count:1", config.URL, buildTypeID),
@@ -106,7 +105,7 @@ func LastBuild(config config.Config, buildTypeID string) (Build, error) {
 	return Build{}, nil
 }
 
-func GetBuild(config config.Config, buildID int) (DetailedBuild, error) {
+func GetBuild(config Config, buildID int) (DetailedBuild, error) {
 	req, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf("%s/app/rest/builds/id:%d", config.URL, buildID),
