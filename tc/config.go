@@ -78,21 +78,25 @@ func (c Config) BuildTypeID(env string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	return c.BuildTypeIDForProject(currentProject, env)
+}
+
+func (c Config) BuildTypeIDForProject(project string, env string) (string, error) {
 	if c.BuildIDs == nil {
 		c.BuildIDs = make(map[string]map[string]string)
 	}
-	if envs, ok := c.BuildIDs[currentProject]; ok {
+	if envs, ok := c.BuildIDs[project]; ok {
 		if id, ok := envs[env]; ok {
 			return id, nil
 		}
 	} else {
-		c.BuildIDs[currentProject] = make(map[string]string)
+		c.BuildIDs[project] = make(map[string]string)
 	}
 
-	fmt.Printf("Set buildID for project %s in env %s: ", currentProject, env)
+	fmt.Printf("Set buildID for project %s in env %s: ", project, env)
 	var id string
 	fmt.Scanln(&id)
-	c.BuildIDs[currentProject][env] = id
+	c.BuildIDs[project][env] = id
 	if err := c.Save(); err != nil {
 		return "", err
 	}

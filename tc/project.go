@@ -15,7 +15,7 @@ type buildResponse struct {
 }
 
 // BuildStatus ...
-type BuildStatus string 
+type BuildStatus string
 
 const (
 	// BuildStatusSuccess ...
@@ -72,6 +72,43 @@ func LastBuild(config Config, buildTypeID string) (Build, error) {
 	req, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf("%s/app/rest/builds?locator=buildType:(id:%s),branch:default:any,running:any,defaultFilter:false,count:1", config.URL, buildTypeID),
+		nil,
+	)
+	if err != nil {
+		return Build{}, errors.WithStack(err)
+	}
+
+	req.Header.Add("Content-Type", "application/xml")
+	req.Header.Add("Accept", "application/json")
+	req.SetBasicAuth(config.UserName, config.Password)
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return Build{}, errors.WithStack(err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		body, _ := ioutil.ReadAll(res.Body)
+		return Build{}, fmt.Errorf("error making request: %s", string(body))
+	}
+
+	builds := buildResponse{}
+	if err := json.NewDecoder(res.Body).Decode(&builds); err != nil {
+		return Build{}, errors.WithStack(err)
+	}
+
+	if len(builds.Builds) > 0 {
+		return builds.Builds[0], nil
+	}
+	return Build{}, nil
+}
+
+func LastBuildSuccessByBranch(config Config, buildTypeID string, branch string) (Build, error) {
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("%s/app/rest/builds?locator=buildType:(id:%s),branch:%s,running:false,status:success,defaultFilter:false", config.URL, buildTypeID, branch),
 		nil,
 	)
 	if err != nil {
