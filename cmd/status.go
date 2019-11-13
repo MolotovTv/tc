@@ -81,6 +81,7 @@ L:
 		return
 	}
 	if build.Status != tc.BuildStatusSuccess {
+		color.Magenta("%+v", build)
 		color.Red("Build failed!")
 		return
 	}
