@@ -8,8 +8,7 @@ import (
 	"strconv"
 
 	"github.com/fatih/color"
-	"github.com/molotovtv/tc/internal/config"
-	"github.com/molotovtv/tc/internal/git"
+	"github.com/molotovtv/tc/git"
 	"github.com/molotovtv/tc/tc"
 	"github.com/spf13/cobra"
 )
@@ -131,11 +130,11 @@ var pkgCmd = &cobra.Command{
 			log.Fatalf("tag %s does not validate, tags for packaging must be vx.y.z", tag)
 			return
 		}
-		c, err := config.Load()
+		c, err := tc.LoadConfig()
 		if err != nil {
 			log.Fatalf("%+v", err)
 		}
-		buildTypeID, err := config.BuildTypeID("packaging")
+		buildTypeID, err := c.BuildTypeID("packaging")
 		if err != nil {
 			log.Fatalf("%+v", err)
 		}

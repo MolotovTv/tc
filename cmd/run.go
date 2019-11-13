@@ -8,8 +8,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/molotovtv/tc/tc"
 
-	"github.com/molotovtv/tc/internal/config"
-	"github.com/molotovtv/tc/internal/git"
+	"github.com/molotovtv/tc/git"
 	"github.com/spf13/cobra"
 )
 
@@ -71,12 +70,12 @@ var runCmd = &cobra.Command{
 			branch = tag
 		}
 
-		c, err := config.Load()
+		c, err := tc.LoadConfig()
 		if err != nil {
 			log.Fatalf("%+v", err)
 		}
 
-		buildTypeID, err := config.BuildTypeID(env)
+		buildTypeID, err := c.BuildTypeID(env)
 		if err != nil {
 			log.Fatalf("%+v", err)
 		}
