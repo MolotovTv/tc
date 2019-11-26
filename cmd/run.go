@@ -100,6 +100,6 @@ var runCmd = &cobra.Command{
 			return
 		}
 
-		buildStatus(c, buildID)
+		buildStatus(c, buildTypeID, buildID)
 	},
 }

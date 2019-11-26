@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	"syscall"
@@ -41,11 +42,11 @@ var statusCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		buildStatus(c, build.ID)
+		buildStatus(c, buildTypeID, build.ID)
 	},
 }
 
-func buildStatus(c tc.Config, buildID int) {
+func buildStatus(c tc.Config, buildTypeID string, buildID int) {
 	bar := pb.StartNew(100)
 	var build tc.DetailedBuild
 	signalChan := make(chan os.Signal, 1)
@@ -83,6 +84,10 @@ L:
 	if build.Status != tc.BuildStatusSuccess {
 		color.Magenta("%+v", build)
 		color.Red("Build failed!")
+
+		// Print URL of teamcity
+		fmt.Printf("\nURL: %s\n", color.New(color.FgBlue).SprintFunc()(c.URL+"/viewLog.html?tab=buildLog&buildTypeId="+buildTypeID+"&buildId="+strconv.Itoa(buildID)))
+
 		return
 	}
 	color.Green("Build succeeded!")

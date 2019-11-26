@@ -148,6 +148,6 @@ var pkgCmd = &cobra.Command{
 			return
 		}
 
-		buildStatus(c, buildID)
+		buildStatus(c, buildTypeID, buildID)
 	},
 }

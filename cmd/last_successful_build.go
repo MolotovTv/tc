@@ -18,7 +18,7 @@ var buildsCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 2 {
-			fmt.Printf("builds-success [env] [branch]\n")
+			fmt.Printf("Usage: builds-success [env] [branch]\n")
 			return
 		}
 		env := args[0]
