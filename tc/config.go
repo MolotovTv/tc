@@ -10,9 +10,9 @@ import (
 )
 
 type Config struct {
-	URL      string
 	UserName string
 	Password string
+	URL      string
 	BuildIDs map[string]map[string]string
 }
 
@@ -31,8 +31,8 @@ func LoadConfig() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	path := usr.HomeDir + "/.tc"
-	f, err := os.Open(path)
+	p := usr.HomeDir + "/.tc"
+	f, err := os.Open(p)
 	if err != nil {
 		if !os.IsNotExist(err) {
 			return Config{}, err
@@ -51,7 +51,7 @@ func LoadConfig() (Config, error) {
 		if err != nil {
 			return Config{}, err
 		}
-		return config, ioutil.WriteFile(path, raw, 0644)
+		return config, ioutil.WriteFile(p, raw, 0644)
 	}
 	config := Config{}
 	if err := json.NewDecoder(f).Decode(&config); err != nil {
@@ -69,8 +69,8 @@ func (c Config) Save() error {
 	if err != nil {
 		return err
 	}
-	path := usr.HomeDir + "/.tc"
-	return ioutil.WriteFile(path, raw, 0644)
+	p := usr.HomeDir + "/.tc"
+	return ioutil.WriteFile(p, raw, 0644)
 }
 
 func (c Config) BuildTypeID(env string) (string, error) {
