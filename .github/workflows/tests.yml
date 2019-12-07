@@ -1,0 +1,27 @@
+name: Tests
+on: [push]
+jobs:
+  tests:
+    name: Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    env:
+      GO111MODULE: on
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+        id: go
+      - name: Checkout Code
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: Test
+        env:
+          GOPATH: ${{runner.workspace}}
+        run: |
+          go mod tidy -v
+          go test -race ./...

@@ -66,7 +66,7 @@ func Tags() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	tags := []string{}
+	var tags []string
 	for _, tag := range strings.Split(string(out), "\n") {
 		tag = strings.TrimSpace(tag)
 		if len(tag) > 0 {
