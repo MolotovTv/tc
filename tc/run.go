@@ -3,7 +3,7 @@ package tc
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	io "io"
 	"net/http"
 	"strings"
 
@@ -42,7 +42,7 @@ func RunBranch(config Config, buildType, branch string) (int, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		body, _ := ioutil.ReadAll(res.Body)
+		body, _ := io.ReadAll(res.Body)
 		return 0, fmt.Errorf("error making request: %s", string(body))
 	}
 

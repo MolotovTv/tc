@@ -3,7 +3,6 @@ package tc
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"path"
@@ -51,7 +50,7 @@ func LoadConfig() (Config, error) {
 		if err != nil {
 			return Config{}, err
 		}
-		return config, ioutil.WriteFile(p, raw, 0644)
+		return config, os.WriteFile(p, raw, 0600)
 	}
 	config := Config{}
 	if err := json.NewDecoder(f).Decode(&config); err != nil {
@@ -70,7 +69,7 @@ func (c Config) Save() error {
 		return err
 	}
 	p := usr.HomeDir + "/.tc"
-	return ioutil.WriteFile(p, raw, 0644)
+	return os.WriteFile(p, raw, 0600)
 }
 
 func (c Config) BuildTypeID(env string) (string, error) {
