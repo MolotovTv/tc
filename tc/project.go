@@ -3,7 +3,7 @@ package tc
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	io "io"
 	"net/http"
 	"strings"
 
@@ -61,7 +61,7 @@ func CancelBuild(config Config, buildID int) error {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		body, _ := ioutil.ReadAll(res.Body)
+		body, _ := io.ReadAll(res.Body)
 		return fmt.Errorf("error making request: %s", string(body))
 	}
 	return nil
@@ -90,7 +90,7 @@ func LastBuild(config Config, buildTypeID string) (Build, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		body, _ := ioutil.ReadAll(res.Body)
+		body, _ := io.ReadAll(res.Body)
 		return Build{}, fmt.Errorf("error making request: %s", string(body))
 	}
 
@@ -127,7 +127,7 @@ func LastBuildSuccessByBranch(config Config, buildTypeID string, branch string) 
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		body, _ := ioutil.ReadAll(res.Body)
+		body, _ := io.ReadAll(res.Body)
 		return Build{}, fmt.Errorf("error making request: %s", string(body))
 	}
 
@@ -163,7 +163,7 @@ func GetBuild(config Config, buildID int) (DetailedBuild, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		body, _ := ioutil.ReadAll(res.Body)
+		body, _ := io.ReadAll(res.Body)
 		return DetailedBuild{}, fmt.Errorf("error making request: %s", string(body))
 	}
 
