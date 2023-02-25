@@ -12,7 +12,7 @@ require (
 	github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3 // indirect
-	golang.org/x/sys v0.0.0-20180830151530-49385e6e1522 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	gopkg.in/cheggaaa/pb.v1 v1.0.27 // indirect
 )
 
