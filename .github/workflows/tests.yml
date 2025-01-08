@@ -11,12 +11,12 @@ jobs:
       GO111MODULE: on
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.16
+          go-version: 1.21
         id: go
       - name: Checkout Code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - name: Test
